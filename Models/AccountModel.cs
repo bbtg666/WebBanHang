@@ -17,13 +17,12 @@ namespace Models
         }
         public bool Login(string userName, string pwd)
         {
-            object[] sqlParams = 
+            Account user = context.Accounts.Where(c => c.UserName == userName && c.Password == pwd).FirstOrDefault();
+            if(user == null)
             {
-                new SqlParameter("@UserName", userName),
-                new SqlParameter("@Password", pwd)
-            };
-            var res = context.Database.SqlQuery<bool>("SP_Account_Login @UserName, @Password", sqlParams).SingleOrDefault();
-            return res;
+                return false;
+            }
+            return true;
         }
     }
 }

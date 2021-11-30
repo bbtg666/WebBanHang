@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using WebBanHang.Areas.Admin.Models;
 using Models;
 using WebBanHang.Areas.Admin.Code;
+using System.Web.Security;
 
 namespace WebBanHang.Areas.Admin.Controllers
 {
@@ -40,10 +41,11 @@ namespace WebBanHang.Areas.Admin.Controllers
                     return View();
                 }
             }
-            var rs = new AccountModel().Login(model.UserName, model.Password);
-            if (rs && ModelState.IsValid)
+            //var rs = new AccountModel().Login(model.UserName, model.Password);
+            if (Membership.ValidateUser(model.UserName,model.Password) && ModelState.IsValid)
             {
-                SessionHelper.SetSession(new UserSession() { UserName = model.UserName });
+                //SessionHelper.SetSession(new UserSession() { UserName = model.UserName });
+                FormsAuthentication.SetAuthCookie(model.UserName, !model.RememberMe);
                 return RedirectToAction("Index", "Home");
             }
             else
@@ -51,6 +53,11 @@ namespace WebBanHang.Areas.Admin.Controllers
                 ViewBag.MsgErr =( "Tài khoản hoặc mật khẩu không chính xác!");
             }
             return View();
+        }
+        public ActionResult Logout()
+        {
+            FormsAuthentication.SignOut();
+            return RedirectToAction("Index", "Login");
         }
     }
 }
